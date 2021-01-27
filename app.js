@@ -1,71 +1,76 @@
 const canvas = document.getElementById('myCanvas');
 const ctx = canvas.getContext('2d');
 
-canvas.width = 700
-canvas.height = 700
+canvas.width = 500
+canvas.height = 343
 
-ctx.strokeStyle = "#2c2c2c"
+ctx.strokeStyle = "#FFFF00"
 ctx.lineWidth = 2.5
 
 let isPainting = false;
 prevPos = [];
-userStrokeStyle = '#EE92C2';    
-line = [];
+userStrokeStyle = '#EE92C2';
+lastPos = [];
 
-function onMouseMove(event){
-
+function onMouseMove(event) {
     const x = event.offsetX;
     const y = event.offsetY;
-}
-
-function onMouseDown(event){
-    const x = event.offsetX;
-    const y = event.offsetY;
-    isPainting = true
-    prevPos.push([x,y])
-    console.log("processing..")
-}
-
-
-function onMouseMove(event){
-    const x = event.offsetX;
-    const y = event.offsetY;    
-    if(!isPainting){
+    if (!isPainting) {
         ctx.beginPath();
-        ctx.moveTo(x,y)
+        ctx.moveTo(x, y);
     }
+    if (prevPos.length>2){
+        var step;
+        for(step=0; step<prevPos.length-1; step++){
+        const [first_x1,first_y1] =prevPos[step]
+        const [first_x2,first_y2] =prevPos[step+1]
+        const [last_x,last_y] =prevPos[prevPos.length-1]
+        if(intersects(first_x1,first_y1,first_x2,first_y2,last_x,last_y,x,y)){
+            alert("선분이 서로 교차하고 있습니다.")
+        }}}
+}
+
+function onMouseClick(event) {
+    const x = event.offsetX;
+    const y = event.offsetY;
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    lastPos.push([x, y])
+    isPainting = true
+    prevPos.push([x, y])
 
 }
 
-function onMouseUp(event){
-    const x = event.offsetX;
-    const y = event.offsetY;       
-    ctx.lineTo(x,y);
-    ctx.stroke();        
-}
-
-function onMousedb(event){
-    if(isPainting){
-    const x = event.offsetX;
-    const y = event.offsetY;   
-    prevPos.push([x,y])    
-    const pre_x = prevPos[0][0]
-    const pre_y = prevPos[0][1]
-    ctx.beginPath();
-    ctx.moveTo(x,y)
-    ctx.lineTo(pre_x,pre_y)
-    ctx.stroke();      
-    isPainting=false
+function onRightClick(event) {
+    if (isPainting) {
+        ctx.closePath();
+        ctx.stroke();
+        isPainting = false
+        prevPos = [];
+        
     }
 }
 
+function clear() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
 
+function intersects(a,b,c,d,p,q,r,s) {
+    var det, gamma,lambda;
+    det = (c - a) * (s - q) - (r - p) * (d - b);
+    if (det === 0) {
+      return false;
+    } else {
+      lambda = ((s - q) * (r - a) + (p - r) * (s - b)) / det;
+      gamma = ((b - d) * (r - a) + (c - a) * (s - b)) / det;
+      return (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);
+    }
+  };
 
-if(canvas){
+if (canvas) {
     canvas.addEventListener("mousemove", onMouseMove)
-    canvas.addEventListener("mousedown", onMouseDown)
-    canvas.addEventListener("mouseup", onMouseUp)
-    canvas.addEventListener("dblclick", onMousedb)
+    canvas.addEventListener("click", onMouseClick)
+    canvas.addEventListener("contextmenu", onRightClick)
 }
 
 // First path
