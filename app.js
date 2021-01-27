@@ -43,10 +43,26 @@ function onMouseClick(event) {
 
 function onRightClick(event) {
     if (isPainting) {
+        var step;
+        var state = 0;
+        for(step=0; step<prevPos.length-1; step++){
+        const [first_x,first_y] =prevPos[0]            
+        const [first_x1,first_y1] =prevPos[step]
+        const [first_x2,first_y2] =prevPos[step+1]
+        const [last_x,last_y] =prevPos[prevPos.length-1]       
+        if(intersects(first_x1,first_y1,first_x2,first_y2,last_x,last_y,first_x,first_y)){
+            state = state+1
+        }
+        }
+        if(state){
+            alert("선이 교차하면 도형이 완성되지 않습니다.")
+        }
+        else{
         ctx.closePath();
         ctx.stroke();
         isPainting = false
         prevPos = [];
+    }
         
     }
 }
