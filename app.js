@@ -55,6 +55,7 @@ function clear() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
+//https://www.python2.net/questions-127770.htm
 function intersects(a,b,c,d,p,q,r,s) {
     var det, gamma,lambda;
     det = (c - a) * (s - q) - (r - p) * (d - b);
